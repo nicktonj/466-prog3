@@ -3,14 +3,14 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
-import network_1 as network
-import link_1 as link
+import network_2 as network
+import link_2 as link
 import threading
 from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 1 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 3 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     #add all the links
     #link parameters: from_node, from_intf_num, to_node, to_intf_num, mtu
     link_layer.add_link(link.Link(client, 0, router_a, 0, 50))
-    link_layer.add_link(link.Link(router_a, 0, server, 0, 50))
+    link_layer.add_link(link.Link(router_a, 0, server, 0, 30))
     
     
     #start all the objects
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     
     #create some send events    
     for i in range(3):
-        message = 'Sample data yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay %d' % i
+        message = 'Sample data yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay %d' % i
         client.udt_send(2, message)
     
     
