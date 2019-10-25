@@ -47,6 +47,7 @@ if __name__ == '__main__':
     
     #create some send events    
     for i in range(3):
+        # message that will have over 80 characters to be able to send two packets
         message = 'Sample data yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay %d' % i
         client.udt_send(2, message)
     
