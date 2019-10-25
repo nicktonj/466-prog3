@@ -81,8 +81,10 @@ class Host:
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
-        # If packet is too long, send bits up until mtu then recursively call self.udt_send with what's left of the packet
+        # If packet is too long, create a packet up to the mtu length, then call the send function 
+        # again recursively until all of the message is sent.
         if len(data_S) > self.out_intf_L[0].mtu:
+            # create packet up to mtu length, send the paket in byte form, and then call udt_send() with remaining message length
             p = NetworkPacket(dst_addr, data_S[0:self.out_intf_L[0].mtu-5])
             self.out_intf_L[0].put(p.to_byte_S()) 
             print('%s: sending packet "%s" as two packets on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
