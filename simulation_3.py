@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 3 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 5 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     #create some send events    
     for i in range(3):
         message = 'Sample data yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay %d' % i
-        client.udt_send(2, message)
+        client1.udt_send(2, message)
     
     
     #give the network sufficient time to transfer all packets before quitting
