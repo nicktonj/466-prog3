@@ -117,12 +117,13 @@ class Router:
     ##@param name: friendly router name for debugging
     # @param intf_count: the number of input and output interfaces 
     # @param max_queue_size: max queue length (passed to Interface)
-    def __init__(self, name, intf_count, max_queue_size):
+    def __init__(self, name, intf_count, max_queue_size, routing_table):
         self.stop = False #for thread termination
         self.name = name
         #create a list of interfaces
         self.in_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
         self.out_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
+        self.routing_table = routing_table
 
     ## called when printing the object
     def __str__(self):
@@ -138,6 +139,9 @@ class Router:
                 pkt_S = self.in_intf_L[i].get()
                 #if packet exists make a forwarding decision
                 if pkt_S is not None:
+
+
+                    
                     while len(pkt_S) > self.out_intf_L[i].mtu:
                         p = NetworkPacket.from_byte_S(pkt_S[:self.out_intf_L[i].mtu-5])
                         pkt_S = pkt_S[0:NetworkPacket.dst_addr_S_length] + pkt_S[self.out_intf_L[i].mtu-5:]
