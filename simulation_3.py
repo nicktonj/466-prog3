@@ -3,8 +3,8 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
-import network_2 as network
-import link_2 as link
+import network_3 as network
+import link_3 as link
 import threading
 from time import sleep
 
@@ -13,6 +13,13 @@ router_queue_size = 0 #0 means unlimited
 simulation_time = 5 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
+    # Router Tables
+    table_A = {}
+    table_B = {}
+    table_C = {}
+    table_D = {}
+
+    
     object_L = [] #keeps track of objects, so we can kill their threads
     
     #create network nodes
