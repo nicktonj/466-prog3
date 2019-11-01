@@ -40,19 +40,19 @@ if __name__ == '__main__':
     object_L.append(server2)
 
     # Router A
-    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size)
+    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, routing_table=table_A)
     object_L.append(router_a)
 
     # Router B
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size)
+    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, routing_table=table_B)
     object_L.append(router_b)
 
     # Router C
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size)
+    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, routing_table=table_C)
     object_L.append(router_c)
 
     # Router D
-    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size)
+    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, routing_table=table_D)
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
