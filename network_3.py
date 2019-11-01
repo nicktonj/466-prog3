@@ -134,6 +134,11 @@ class Router:
     def __str__(self):
         return 'Router_%s' % (self.name)
 
+
+    def lookup(self, src_addr):
+        route_to = self.routing_table.get(src_addr)
+        return 0 if route_to is None else route_to
+
     ## look through the content of incoming interfaces and forward to
     # appropriate outgoing interfaces
     def forward(self):
@@ -147,16 +152,16 @@ class Router:
                     while len(pkt_S) > self.out_intf_L[i].mtu:
                         p = NetworkPacket.from_byte_S(pkt_S[:self.out_intf_L[i].mtu-10])
                         pkt_S = pkt_S[0:NetworkPacket.src_addr_S_length] + pkt_S[NetworkPacket.src_addr_S_length:NetworkPacket.src_addr_S_length+NetworkPacket.dst_addr_S_length] + pkt_S[self.out_intf_L[i].mtu-10:]
-                        self.out_intf_L[i].put(p.to_byte_S(), True)
+                        self.out_intf_L[self.lookup(p.src_addr)].put(p.to_byte_S(), True)
                         if len(pkt_S) == 0:
                             return
                     p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
                     # HERE you will need to implement a lookup into the 
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
-                    self.out_intf_L[i].put(p.to_byte_S(), True)
+                    self.out_intf_L[self.lookup(p.src_addr)].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                        % (self, p, i, i, self.out_intf_L[i].mtu-10))
+                        % (self, p, i, i, self.out_intf_L[i].mtu))
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass

@@ -10,23 +10,23 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 5 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 10 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     # Router Tables
     table_A = {
-        '1': '66',
-        '2': '67'
+        1: 0,
+        2: 1
     }
     table_B = {
-        '65': '68'
+        1: 0
     }
     table_C = {
-        '65': '68'
+        2: 0
     }
     table_D = {
-        '66': '3',
-        '67': '4'
+        1: 0,
+        2: 1
     }
 
     
@@ -50,19 +50,19 @@ if __name__ == '__main__':
     object_L.append(server2)
 
     # Router A
-    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, routing_table=table_A)
+    router_a = network.Router(name='A', intf_count=len(table_A), max_queue_size=router_queue_size, routing_table=table_A)
     object_L.append(router_a)
 
     # Router B
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, routing_table=table_B)
+    router_b = network.Router(name='B', intf_count=len(table_B), max_queue_size=router_queue_size, routing_table=table_B)
     object_L.append(router_b)
 
     # Router C
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, routing_table=table_C)
+    router_c = network.Router(name='C', intf_count=len(table_C), max_queue_size=router_queue_size, routing_table=table_C)
     object_L.append(router_c)
 
     # Router D
-    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, routing_table=table_D)
+    router_d = network.Router(name='D', intf_count=len(table_D), max_queue_size=router_queue_size, routing_table=table_D)
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
@@ -72,21 +72,21 @@ if __name__ == '__main__':
     #add all the links
     #link parameters: from_node, from_intf_num, to_node, to_intf_num, mtu
     link_layer.add_link(link.Link(client1, 0, router_a, 0, 50))
-    link_layer.add_link(link.Link(client2, 0, router_a, 0, 50))
+    link_layer.add_link(link.Link(client2, 0, router_a, 1, 50))
 
     # Router A links to next object
     link_layer.add_link(link.Link(router_a, 0, router_b, 0, 50))
-    link_layer.add_link(link.Link(router_a, 0, router_c, 0, 50))
+    link_layer.add_link(link.Link(router_a, 1, router_c, 0, 50))
 
     # Router B links to next object
     link_layer.add_link(link.Link(router_b, 0, router_d, 0, 50))
 
     # Router C links to next object
-    link_layer.add_link(link.Link(router_c, 0, router_d, 0, 50))
+    link_layer.add_link(link.Link(router_c, 0, router_d, 1, 50))
 
     # Router D links to next object
     link_layer.add_link(link.Link(router_d, 0, server1, 0, 50))
-    link_layer.add_link(link.Link(router_d, 0, server2, 0, 50))
+    link_layer.add_link(link.Link(router_d, 1, server2, 0, 50))
     
     
     #start all the objects
