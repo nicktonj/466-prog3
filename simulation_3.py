@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 10 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 20 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     # Router Tables
@@ -79,10 +79,10 @@ if __name__ == '__main__':
     link_layer.add_link(link.Link(router_a, 1, router_c, 0, 50))
 
     # Router B links to next object
-    link_layer.add_link(link.Link(router_b, 0, router_d, 0, 50))
+    link_layer.add_link(link.Link(router_b, 0, router_d, 0, 30))
 
     # Router C links to next object
-    link_layer.add_link(link.Link(router_c, 0, router_d, 1, 50))
+    link_layer.add_link(link.Link(router_c, 0, router_d, 1, 30))
 
     # Router D links to next object
     link_layer.add_link(link.Link(router_d, 0, server1, 0, 50))
