@@ -35,10 +35,13 @@ class Interface:
 class NetworkPacket:
     ## packet encoding lengths 
     dst_addr_S_length = 5
+    src_addr_S_length = 5
     
-    ##@param dst_addr: address of the destination host
+    ##@param src_addr: address of the sender
+    # @param dst_addr: address of the destination host
     # @param data_S: packet payload
-    def __init__(self, dst_addr, data_S):
+    def __init__(self, src_addr, dst_addr, data_S):
+        self.src_addr = src_addr
         self.dst_addr = dst_addr
         self.data_S = data_S
         
@@ -48,7 +51,8 @@ class NetworkPacket:
         
     ## convert packet to a byte string for transmission over links
     def to_byte_S(self):
-        byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length)
+        byte_S = str(self.src_addr).zfill(self.src_addr_S_length)
+        byte_S += str(self.dst_addr).zfill(self.dst_addr_S_length)
         byte_S += self.data_S
         return byte_S
     
@@ -56,9 +60,10 @@ class NetworkPacket:
     # @param byte_S: byte string representation of the packet
     @classmethod
     def from_byte_S(self, byte_S):
-        dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
-        data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
-        return self(dst_addr, data_S)
+        src_addr = int(byte_S[0 : NetworkPacket.src_addr_S_length])
+        dst_addr = int(byte_S[NetworkPacket.src_addr_S_length : NetworkPacket.src_addr_S_length + NetworkPacket.dst_addr_S_length])
+        data_S = byte_S[NetworkPacket.src_addr_S_length + NetworkPacket.dst_addr_S_length : ]
+        return self(src_addr, dst_addr, data_S)
     
 
     
@@ -80,15 +85,15 @@ class Host:
     ## create a packet and enqueue for transmission
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
-    def udt_send(self, dst_addr, data_S):
+    def udt_send(self, src_addr, dst_addr, data_S):
         # If packet is too long, send bits up until mtu then recursively call self.udt_send with what's left of the packet
         if len(data_S) > self.out_intf_L[0].mtu:
-            p = NetworkPacket(dst_addr, data_S[0:self.out_intf_L[0].mtu-5])
+            p = NetworkPacket(src_addr, dst_addr, data_S[0:self.out_intf_L[0].mtu-10])
             self.out_intf_L[0].put(p.to_byte_S()) 
             print('%s: sending packet "%s" as two packets on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
-            self.udt_send(dst_addr, data_S[self.out_intf_L[0].mtu-5:])
+            self.udt_send(src_addr, dst_addr, data_S[self.out_intf_L[0].mtu-10:])
         else:   
-            p = NetworkPacket(dst_addr, data_S)
+            p = NetworkPacket(src_addr, dst_addr, data_S)
             self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
             print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
         
@@ -139,12 +144,9 @@ class Router:
                 pkt_S = self.in_intf_L[i].get()
                 #if packet exists make a forwarding decision
                 if pkt_S is not None:
-
-
-                    
                     while len(pkt_S) > self.out_intf_L[i].mtu:
-                        p = NetworkPacket.from_byte_S(pkt_S[:self.out_intf_L[i].mtu-5])
-                        pkt_S = pkt_S[0:NetworkPacket.dst_addr_S_length] + pkt_S[self.out_intf_L[i].mtu-5:]
+                        p = NetworkPacket.from_byte_S(pkt_S[:self.out_intf_L[i].mtu-10])
+                        pkt_S = pkt_S[0:NetworkPacket.src_addr_S_length] + pkt_S[NetworkPacket.src_addr_S_length:NetworkPacket.src_addr_S_length+NetworkPacket.dst_addr_S_length] + pkt_S[self.out_intf_L[i].mtu-10:]
                         self.out_intf_L[i].put(p.to_byte_S(), True)
                         if len(pkt_S) == 0:
                             return
@@ -154,7 +156,7 @@ class Router:
                     # for now we assume the outgoing interface is also i
                     self.out_intf_L[i].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                        % (self, p, i, i, self.out_intf_L[i].mtu))
+                        % (self, p, i, i, self.out_intf_L[i].mtu-10))
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass

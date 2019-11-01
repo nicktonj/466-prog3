@@ -14,10 +14,20 @@ simulation_time = 5 #give the network sufficient time to transfer all packets be
 
 if __name__ == '__main__':
     # Router Tables
-    table_A = {}
-    table_B = {}
-    table_C = {}
-    table_D = {}
+    table_A = {
+        '1': '66',
+        '2': '67'
+    }
+    table_B = {
+        '65': '68'
+    }
+    table_C = {
+        '65': '68'
+    }
+    table_D = {
+        '66': '3',
+        '67': '4'
+    }
 
     
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -103,8 +113,8 @@ if __name__ == '__main__':
     #create some send events    
     for i in range(3):
         message = 'Sample data yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay %d' % i
-        client1.udt_send(2, message)
-    
+        client1.udt_send(1, 3, message)
+        client2.udt_send(2, 4, message)
     
     #give the network sufficient time to transfer all packets before quitting
     sleep(simulation_time)
